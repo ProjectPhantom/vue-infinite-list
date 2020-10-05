@@ -1,6 +1,6 @@
 {
   "name": "@projectphantom/vue-infinite-list",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "private": false,
   "main": "./dist/vue-infinite-list.common.js",
   "files": [
@@ -9,10 +9,10 @@
     "src/components/InfiniteList.vue",
     "*.json"
   ],
-  "types": "./types/index.d.ts",
+  "typings": "./types/index.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --modern --target lib --name vue-infinite-list src/components/InfiniteList.vue",
+    "build": "vue-cli-service build --target lib --name vue-infinite-list src/components/InfiniteList.vue",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

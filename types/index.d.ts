@@ -1,2 +1,1 @@
-import { VueConstructor } from "vue"
-export const InfiniteList: VueConstructor
+declare module "@projectphantom/vue-infinite-list";
