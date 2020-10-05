@@ -1,11 +1,12 @@
 {
-  "name": "vue-infinite-list",
-  "version": "1.0.0",
+  "name": "@projectphantom/vue-infinite-list",
+  "version": "1.0.1",
   "private": false,
   "main": "./dist/vue-infinite-list.common.js",
   "files": [
     "dist/*",
-    "src/components/InfiniteList.vue"
+    "src/components/InfiniteList.vue",
+    "*.json"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -33,5 +34,21 @@
     "sass-loader": "^8.0.2",
     "typescript": "^3.9.7",
     "vue-template-compiler": "^2.6.11"
-  }
+  },
+  "description": "A Vue.js component that allows for efficient loading of large lists",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProjectPhantom/vue-infinite-list.git"
+  },
+  "keywords": [
+    "vue",
+    "infinite",
+    "scroll"
+  ],
+  "author": "ProjectPhantom",
+  "license": "GNU General Public License v3.0",
+  "bugs": {
+    "url": "https://github.com/ProjectPhantom/vue-infinite-list/issues"
+  },
+  "homepage": "https://github.com/ProjectPhantom/vue-infinite-list#readme"
 }
