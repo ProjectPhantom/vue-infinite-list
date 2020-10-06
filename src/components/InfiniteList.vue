@@ -127,7 +127,7 @@ export default class InfiniteList extends Vue {
       const scrollable = this.$refs.scrollable as HTMLElement | null;
       if (!scrollable) return;
 
-      console.log("Checking visibility");
+      // console.log("Checking visibility");
 
       const anyVisible = Object.values(this.visibility).reduce(
         (a, v) => a || v,
@@ -258,7 +258,7 @@ export default class InfiniteList extends Vue {
     const rpo = this.renderedPageOffsets;
     for (let i = 0; i < rpo.length; i++) {
       if (rpo[i] <= scrolledPos && (rpo[i + 1] || Infinity) > scrolledPos) {
-        console.log("Checking offset", i, rpo[i], scrolledPos);
+        // console.log("Checking offset", i, rpo[i], scrolledPos);
         return i;
       }
     }
