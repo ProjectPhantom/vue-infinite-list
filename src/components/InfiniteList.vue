@@ -1,30 +1,31 @@
 <template>
-  <span class="scrollable" ref="scrollable">
+  <span class="vue-inf-scrollable" ref="scrollable">
     <div class="pusher" :style="scrollHeightPreserverStyle"></div>
-    <div class="content" :style="contentWrapperStyle">
+    <div class="vue-inf-content" :style="contentWrapperStyle">
       <div
-        class="sentinel-top"
+        class="vue-inf-sentinel-top"
         ref="sentinel-top"
         :style="getSentinelStyle('bottom')"
       ></div>
 
       <div
-        class="row"
-        v-for="(num, index) in pageSize * 3"
+        class="vue-inf-row"
+        v-for="(num, index) in rowCount"
         :key="'infiniteListItem' + index"
         :style="getRowStyle(index)"
         :class="visibilitySentinel(index)"
         :data-index="index"
+        :data-list-index="getListIndexFromOffset(index)"
         :ref="'row' + index"
       >
         <slot
-          :item="list[getListIndexFromOffset(index)]"
+          :item="getListItemFromOffset(index)"
           :index="getListIndexFromOffset(index)"
         />
       </div>
 
       <div
-        class="sentinel-bottom"
+        class="vue-inf-sentinel-bottom"
         ref="sentinel-bottom"
         :style="getSentinelStyle('bottom')"
       ></div>
@@ -84,7 +85,7 @@ export default class InfiniteList extends Vue {
     ];
 
     const scrollable = this.$refs.scrollable as HTMLElement;
-    const marginSize = 200;
+    const marginSize = 100;
 
     this.observer = new IntersectionObserver(
       (intersecting) => {
@@ -188,6 +189,10 @@ export default class InfiniteList extends Vue {
   renderedPageOffsets: number[] = [0];
   itemHeights: number[] = [];
 
+  get rowCount() {
+    return Math.min(this.list.length, this.pageSize * 3);
+  }
+
   getRowStyle(rowIndex: number) {
     const listItemIndex = this.getListIndexFromOffset(rowIndex);
 
@@ -236,6 +241,10 @@ export default class InfiniteList extends Vue {
     return changeIndex;
   }
 
+  getListItemFromOffset(rowIndex: number) {
+    return this.list[this.getListIndexFromOffset(rowIndex)];
+  }
+
   getListIndexFromOffset(rowIndex: number) {
     const pageNum = Math.floor(rowIndex / this.pageSize);
     const intraPageOffset = rowIndex % this.pageSize;
@@ -276,32 +285,41 @@ export default class InfiniteList extends Vue {
       return "";
     }
 
-    if (bt == "top") {
-      let viewStart = (this.pageIndex - 1) * this.pageSize;
-      viewStart = viewStart > 0 ? viewStart : 0;
+    const [viewStart, viewEnd] = this.getViewBounds();
 
+    if (bt == "top") {
       return `
         position: absolute;
         transform: translateY(${viewStart * this.itemHeight}px)
       `;
     }
 
-    let viewEnd = (this.pageIndex + 1) * this.pageSize + this.pageSize;
-    if (viewEnd > this.list.length) viewEnd = this.list.length;
     return `
       position: absolute;
       transform: translateY(${viewEnd * this.itemHeight}px)
     `;
   }
 
+  getViewBounds() {
+    let viewStart = (this.pageIndex - 1) * this.pageSize;
+    viewStart = viewStart > 0 ? viewStart : 0;
+
+    let viewEnd = (this.pageIndex + 1) * this.pageSize + this.pageSize;
+    if (viewEnd > this.list.length) viewEnd = this.list.length;
+
+    return [viewStart, viewEnd];
+  }
+
   scrollTo(index: number, options?: { middle?: boolean }) {
     const scrollable = this.$refs.scrollable as HTMLElement | null;
     if (!scrollable) return;
 
-    // if (this.isVisible(index)) {
-    //   this.scrollVisible(index);
-    //   return;
-    // }
+    // If the index is currently rendered
+    const [viewStart, viewEnd] = this.getViewBounds();
+    if (index >= viewStart && index <= viewEnd) {
+      this.scrollVisible(index);
+      return;
+    }
 
     let px = index * this.itemHeight;
 
@@ -312,6 +330,23 @@ export default class InfiniteList extends Vue {
 
     scrollable.scrollTo(0, px);
     // this.changePage();
+  }
+
+  scrollVisible(index: number) {
+    let element = this.$el.querySelector(
+      `.row[data-list-index="${index}"]`
+    ) as HTMLElement | null;
+
+    if (Array.isArray(element)) {
+      element = element[0];
+    }
+
+    if (!element) return;
+
+    element.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
   }
 
   changePage() {
@@ -387,27 +422,12 @@ export default class InfiniteList extends Vue {
 
       this.$set(rpo, i, offset);
     }
-
-    // let row = this.$refs["row" + rowIndex] as HTMLElement | HTMLElement[];
-    // if (Array.isArray(row)) row = row[0];
-    // if (!row) return;
-
-    // const listIndex = this.getListIndexFromOffset(rowIndex);
-
-    // this.itemHeights[listIndex] = row.offsetHeight;
-
-    // if (listIndex == 0 || this.renderedOffsets[listIndex]) return;
-
-    // const lastHeight = this.renderedOffsets[listIndex - 1] || 0;
-
-    // if (lastHeight + row.offsetHeight != this.renderedOffsets[listIndex])
-    //   this.$set(this.renderedOffsets, listIndex, lastHeight + row.offsetHeight);
   }
 }
 </script>
 
-<style lang="scss" scoped>
-.scrollable {
+<style scoped>
+.vue-inf-scrollable {
   display: flex;
   flex-flow: column;
   position: relative;
@@ -417,24 +437,23 @@ export default class InfiniteList extends Vue {
   height: 100%;
 
   overflow-y: scroll;
+}
 
-  .content {
-    flex-shrink: 0;
-    width: 100%;
-  }
+.vue-inf-content {
+  flex-shrink: 0;
+  width: 100%;
+}
 
-  .sentinel-top,
-  .sentinel-bottom {
-    top: 0;
-  }
+.vue-inf-sentinel-top,
+.vue-inf-sentinel-bottom {
+  top: 0;
+}
 
-  .row {
-    // position: absolute;
-    top: 0;
-    left: 0;
+.vue-inf-row {
+  top: 0;
+  left: 0;
 
-    display: flex;
-    width: 100%;
-  }
+  display: flex;
+  width: 100%;
 }
 </style>
