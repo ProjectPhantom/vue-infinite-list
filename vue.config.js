@@ -1,16 +1,14 @@
 module.exports = {
-  // configureWebpack: (config) => {
-  //   if (process.env.NODE_ENV === "production") {
-  //     config.module.rules.forEach((rule) => {
-  //       if (rule.use) {
-  //         const idx = rule.use.findIndex((w) => w.loader === "thread-loader");
-  //         if (idx !== -1) rule.use.splice(idx, 1);
-  //       }
-  //     });
-  //   }
+  // configureWebpack: {
+  //   output: {
+  //     libraryExport: 'default'
+  //   },
   // },
+  css: { extract: false },
   chainWebpack: (config) => {
     if (process.env.NODE_ENV === "production") {
+      config.resolve.set("symlinks", false);
+
       // disable cache (not sure if this is actually useful...)
       config.module.rule("ts").uses.delete("cache-loader");
 
